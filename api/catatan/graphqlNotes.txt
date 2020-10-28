@@ -1,0 +1,40 @@
+parent and children relationship:
+contoh:
+type User {
+  id
+  username
+  requests: [Book]
+}
+
+Type Book {
+  idtitle
+}
+
+Type Query {
+  user(id: ID): user
+}
+
+kalau query:
+query {
+  user(id: 1) {
+    requests {
+      title
+    }
+  }
+}
+
+maka resolver function yang dijalankan adalah:
+const query = {
+  user: async (_, {id}, ctx) => {
+    return userData.find(id)
+  }
+}
+Lalu, value yang di return dari resolver di atas akan diteruskan ke children nya dibawah ini:
+requests: async (user, args, ctx) => {
+  return requestList.find(user_id: user._id)
+}
+
+di atas, user jadi parent nya, dimana isi datanya adalah data yang di return oleh resolver sebelumnya!
+Oleh karena itu, dibutuhkan resolvers files sbb:
+querymutation
+requests
