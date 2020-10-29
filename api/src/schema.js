@@ -11,6 +11,7 @@ module.exports = gql`
   type Mutation {
     addNewBookEntry(book: BookInput!, userId: ID!): Book!
     addReq(userId: ID!, bookId: ID!): Boolean!
+    signUp(username: String!, email: String!, password: String!): String!
   }
 
   input BookInput {

@@ -5,7 +5,7 @@ const {
   ForbiddenError,
 } = require("apollo-server-express");
 require("dotenv").config();
-const gravatar = require("gravatar");
+const gravatar = require("gravatar").url;
 const searchBooks = require("../gbookapi");
 
 module.exports = {
@@ -42,6 +42,31 @@ module.exports = {
       return true;
     } catch (err) {
       return err;
+    }
+  },
+
+  signUp: async (parent, { username, email, password }, { db }) => {
+    // normalize email address
+    email = email.trim().toLowerCase();
+    // hash the password
+    const hashed = await bcrypt.hash(password, 10);
+    // create the gravatar url
+    const avatar = gravatar(email);
+
+    try {
+      // crete user's record
+      const user = await db("users")
+        .insert({ username, email, password: hashed, avatar })
+        .returning("id")
+        .then((id) => {
+          return jwt.sign({ id }, process.env.JWT_SECRET);
+        });
+      return user;
+    } catch (err) {
+      console.log(err);
+      if ((err.code = "23505"))
+        return new Error("Username atau Password telah dipakai");
+      throw new Error("Error creating account");
     }
   },
 };
