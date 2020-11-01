@@ -9,39 +9,42 @@ const gravatar = require("gravatar").url;
 const searchBooks = require("../gbookapi");
 
 module.exports = {
-  addNewBookEntry: async (_, { book, userId }, { db }) => {
+  addReq: async (_, { book, userId }, { db }) => {
     // get dummy book data from gbookApi
     // TODO: delete on production!
-    const { items } = await searchBooks("postgresql", 1);
+    const { items } = await searchBooks("graphql", 1);
     const dummyBook = items[0];
-    try {
-      // add book to books table
-      const addedBook = await db("books")
-        // TODO: Don't forget to change dummyBook to book !
-        .insert(dummyBook)
-        .returning("*")
-        .then((res) => res[0]);
 
-      // add  user_request record
-      const userReqRecord = await db("user_request").insert({
-        user_id: userId,
-        book_id: addedBook.id,
-      });
-      return addedBook;
-    } catch (err) {
-      return new ForbiddenError(err.message);
-    }
-  },
-  addReq: async (_, { userId, bookId }, { db }) => {
-    // add req to a listed book
     try {
-      await db("user_request").insert({
-        user_id: userId,
-        book_id: bookId,
+      // check if book already exists in books table
+      // TODO: change dummyBooks to books on production!
+      const bookExists = await db("books")
+        .select("id")
+        .where("gbook_id", dummyBook.gbook_id)
+        .first();
+
+      // make a transaction mutation for add book record to books table and add user request record to user_request table
+      await db.transaction(async (trx) => {
+        let addedBookId;
+        // if book not exist, add book to books table
+        if (!bookExists) {
+          addedBookId = await trx("books")
+            // TODO: Don't forget to change dummyBook to book !
+            .insert(dummyBook)
+            .returning("id")
+            .then((res) => res[0]);
+        }
+
+        // add  user_request record
+        const userReqRecord = await trx("user_request").insert({
+          user_id: userId,
+          book_id: addedBookId || bookExists.id,
+        });
       });
+
       return true;
     } catch (err) {
-      return err;
+      return new ForbiddenError(err.message);
     }
   },
 
@@ -64,9 +67,63 @@ module.exports = {
       return user;
     } catch (err) {
       console.log(err);
-      if ((err.code = "23505"))
+      if (err.code === "23505")
         return new Error("Username atau Password telah dipakai");
-      throw new Error("Error creating account");
+      return new Error("Error creating account");
+    }
+  },
+
+  signIn: async (_, { usernameOrEmail, password }, { db }) => {
+    if (usernameOrEmail) {
+      // normalize email address
+      usernameOrEmail = usernameOrEmail.trim().toLowerCase();
+    }
+    // get user's record
+    const user = await db("users")
+      .select("id", "password")
+      .where("username", usernameOrEmail)
+      .orWhere("email", usernameOrEmail)
+      .first();
+    console.log(user);
+    // if no user is found, throw an authentication error
+    if (!user) {
+      throw new AuthenticationError("username atau email Anda tidak terdaftar");
+    }
+    // if the passwords don't match, throw an authentication error
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      throw new AuthenticationError("Password Anda salah");
+    }
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    console.log(token);
+    return token;
+  },
+
+  deleteReq: async (_, { bookId, userId }, { db }) => {
+    try {
+      await db.transaction(async (trx) => {
+        // delete user request record from user_request table
+        await trx("user_request")
+          .where({ user_id: userId, book_id: bookId })
+          .del();
+
+        // check book req count
+        const reqCount = await trx("user_request")
+          .count("book_id")
+          .where("book_id", bookId)
+          .first()
+          .then((res) => res.count);
+        console.log("reqCount:", reqCount);
+
+        // if reqCount is 0, also delete book entry from books table
+        // FYI, reqCount is a string! weird, i know....
+        if (reqCount === "0") {
+          await trx("books").where("id", bookId).del();
+        }
+      });
+      return true;
+    } catch (err) {
+      return err;
     }
   },
 };

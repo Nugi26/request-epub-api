@@ -1,6 +1,6 @@
 // search books using google book api
 query {
-  searchbook(keywords: "graphql") {
+  searchBook(keywords: "graphql") {
     totalItems
     items {
       gbook_id
@@ -23,7 +23,7 @@ query {
 
 // get all book requests
 query {
-  getallreqs {
+  getAllReqs {
     id
     gbook_id
     title
@@ -60,7 +60,7 @@ query {
 
 // get a book info
 query {
-  getbook(id: 1) {
+  getBook(id: 15) {
     id
     gbook_id
     title
@@ -79,16 +79,20 @@ query {
   }
 }
 
-mutation addNewBookEntry($book: BookInput!, $userId: ID!) {
-  addNewBookEntry (book: $book, userId: $userId) {
-    id
-    title
-  }
+mutation addReq($book: BookInput!, $userId: ID!) {
+  addReq (book: $book, userId: $userId)
 }
 
-// add req to existing book
 mutation {
-  addReq(userId: 2, bookId: 12)
+  signUp(username: "nugie", email: "nugie@nugie.com", password: "password")
+}
+
+mutation {
+  signIn(usernameOrEmail: "nugie", password: "password")
+}
+
+mutation {
+  deleteReq(userId: 8, bookId: 19)
 }
 
 // variables from client
@@ -97,5 +101,9 @@ mutation {
     "title" : "buku baru",
     "authors" : ["agus", "bagus"]
   },
-  "userId" : "2"
+  "userId" : "8"
+}
+
+{
+  "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6WzZdLCJpYXQiOjE2MDM5NzI4MTh9.DHgr6KK5vB29HsifJBRJDeVe-ub5yUWeaFRV5q2HVFk"
 }

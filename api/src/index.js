@@ -41,7 +41,7 @@ const server = new ApolloServer({
     // try to retrieve a user with the token
     const user = await getUser(token);
     // for now, let's log the user to the console:
-    console.log(user);
+    // console.log(user);
     // add the db models and the user to the context
     // return { models, user };
     return { db };

@@ -1,17 +1,17 @@
 const { gql } = require("apollo-server-express");
 module.exports = gql`
   type Query {
-    hello: String
     users: [User]
-    searchbook(keywords: String!): SearchResult
-    getallreqs: [Book]
-    getbook(id: ID!): Book
+    searchBook(keywords: String!): SearchResult
+    getAllReqs: [Book]
+    getBook(id: ID!): Book
   }
 
   type Mutation {
-    addNewBookEntry(book: BookInput!, userId: ID!): Book!
-    addReq(userId: ID!, bookId: ID!): Boolean!
+    addReq(book: BookInput!, userId: ID!): Boolean!
     signUp(username: String!, email: String!, password: String!): String!
+    signIn(usernameOrEmail: String, password: String!): String!
+    deleteReq(userId: ID!, bookId: ID!): Boolean!
   }
 
   input BookInput {
