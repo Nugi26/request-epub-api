@@ -1,24 +1,24 @@
-require("dotenv").config();
-const depthLimit = require("graphql-depth-limit");
-const { createComplexityLimitRule } = require("graphql-validation-complexity");
+require('dotenv').config();
+const depthLimit = require('graphql-depth-limit');
+const { createComplexityLimitRule } = require('graphql-validation-complexity');
 // const helmet = require('helmet');
-const cors = require("cors");
-const jwt = require("jsonwebtoken");
-const db = require("./db/knex");
-const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const typeDefs = require("./schema");
-const resolvers = require("./resolvers");
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const db = require('./db/knex');
+const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
+const typeDefs = require('./schema');
+const resolvers = require('./resolvers');
 
 // get the user info from a JWT
-const getUser = (token) => {
+const getUser = token => {
   if (token) {
     try {
       // return the user information from the token
       return jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
       // if there's a problem with the token, throw an error
-      throw new Error("Session invalid");
+      throw new Error('Session invalid');
     }
   }
 };
@@ -30,8 +30,8 @@ const server = new ApolloServer({
   validationRules: [
     depthLimit(5),
     createComplexityLimitRule(1000, {
-      onCost: (cost) => {
-        console.log("query cost:", cost);
+      onCost: cost => {
+        console.log('query cost:', cost);
       },
     }),
   ],
@@ -43,8 +43,7 @@ const server = new ApolloServer({
     // for now, let's log the user to the console:
     // console.log(user);
     // add the db models and the user to the context
-    // return { models, user };
-    return { db };
+    return { db, user };
   },
 });
 
@@ -58,7 +57,7 @@ const app = express();
 // app.use(helmet());
 app.use(cors());
 // Apply the Apollo GraphQL middleware and set the path to /api
-server.applyMiddleware({ app, path: "/api" });
+server.applyMiddleware({ app, path: '/api' });
 
 // db.connect(DB_HOST);
 

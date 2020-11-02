@@ -1,50 +1,52 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const {
   AuthenticationError,
   ForbiddenError,
-} = require("apollo-server-express");
-require("dotenv").config();
-const gravatar = require("gravatar").url;
-const searchBooks = require("../gbookapi");
+} = require('apollo-server-express');
+require('dotenv').config();
+const { url: gravatar } = require('gravatar');
+const searchBooks = require('../gbookapi');
 
 module.exports = {
-  addReq: async (_, { book, userId }, { db }) => {
+  addReq: async (_, { book }, { db, user }) => {
+    if (!user) throw new AuthenticationError('Anda belum Sign in!');
     // get dummy book data from gbookApi
     // TODO: delete on production!
-    const { items } = await searchBooks("graphql", 1);
+    const { items } = await searchBooks('graphql', 1);
     const dummyBook = items[0];
 
     try {
       // check if book already exists in books table
       // TODO: change dummyBooks to books on production!
-      const bookExists = await db("books")
-        .select("id")
-        .where("gbook_id", dummyBook.gbook_id)
+      const bookExists = await db('books')
+        .select('id')
+        // TODO: change dummyBook to book on production
+        .where('gbook_id', dummyBook.gbook_id)
         .first();
 
       // make a transaction mutation for add book record to books table and add user request record to user_request table
-      await db.transaction(async (trx) => {
+      await db.transaction(async trx => {
         let addedBookId;
         // if book not exist, add book to books table
         if (!bookExists) {
-          addedBookId = await trx("books")
+          addedBookId = await trx('books')
             // TODO: Don't forget to change dummyBook to book !
             .insert(dummyBook)
-            .returning("id")
-            .then((res) => res[0]);
+            .returning('id')
+            .then(res => res[0]);
         }
 
         // add  user_request record
-        const userReqRecord = await trx("user_request").insert({
-          user_id: userId,
+        const userReqRecord = await trx('user_request').insert({
+          user_id: user.id,
           book_id: addedBookId || bookExists.id,
         });
       });
 
       return true;
     } catch (err) {
-      return new ForbiddenError(err.message);
+      return new ForbiddenError(err);
     }
   },
 
@@ -58,18 +60,18 @@ module.exports = {
 
     try {
       // crete user's record
-      const user = await db("users")
+      const user = await db('users')
         .insert({ username, email, password: hashed, avatar })
-        .returning("id")
-        .then((id) => {
+        .returning('id')
+        .then(id => {
           return jwt.sign({ id }, process.env.JWT_SECRET);
         });
       return user;
     } catch (err) {
       console.log(err);
-      if (err.code === "23505")
-        return new Error("Username atau Password telah dipakai");
-      return new Error("Error creating account");
+      if (err.code === '23505')
+        return new Error('Username atau Password telah dipakai');
+      return new Error('Error creating account');
     }
   },
 
@@ -79,46 +81,46 @@ module.exports = {
       usernameOrEmail = usernameOrEmail.trim().toLowerCase();
     }
     // get user's record
-    const user = await db("users")
-      .select("id", "password")
-      .where("username", usernameOrEmail)
-      .orWhere("email", usernameOrEmail)
+    const user = await db('users')
+      .select('id', 'password')
+      .where('username', usernameOrEmail)
+      .orWhere('email', usernameOrEmail)
       .first();
     console.log(user);
     // if no user is found, throw an authentication error
     if (!user) {
-      throw new AuthenticationError("username atau email Anda tidak terdaftar");
+      throw new AuthenticationError('username atau email Anda tidak terdaftar');
     }
     // if the passwords don't match, throw an authentication error
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      throw new AuthenticationError("Password Anda salah");
+      throw new AuthenticationError('Password Anda salah');
     }
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
     console.log(token);
     return token;
   },
 
-  deleteReq: async (_, { bookId, userId }, { db }) => {
+  deleteReq: async (_, { bookId }, { db, user }) => {
+    if (!user) throw new AuthenticationError('Anda belum sign in!');
     try {
-      await db.transaction(async (trx) => {
+      await db.transaction(async trx => {
         // delete user request record from user_request table
-        await trx("user_request")
-          .where({ user_id: userId, book_id: bookId })
+        await trx('user_request')
+          .where({ user_id: user.id, book_id: bookId })
           .del();
 
         // check book req count
-        const reqCount = await trx("user_request")
-          .count("book_id")
-          .where("book_id", bookId)
+        const reqCount = await trx('user_request')
+          .count('book_id')
+          .where('book_id', bookId)
           .first()
-          .then((res) => res.count);
-        console.log("reqCount:", reqCount);
+          .then(res => res.count);
 
         // if reqCount is 0, also delete book entry from books table
-        // FYI, reqCount is a string! weird, i know....
-        if (reqCount === "0") {
-          await trx("books").where("id", bookId).del();
+        // FYI, reqCount is a string! weird...
+        if (reqCount === '0') {
+          await trx('books').where('id', bookId).del();
         }
       });
       return true;

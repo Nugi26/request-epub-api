@@ -1,17 +1,19 @@
-const { gql } = require("apollo-server-express");
+const { gql } = require('apollo-server-express');
 module.exports = gql`
   type Query {
     users: [User]
     searchBook(keywords: String!): SearchResult
     getAllReqs: [Book]
+    getUser(id: ID!): User
+    me: User!
     getBook(id: ID!): Book
   }
 
   type Mutation {
-    addReq(book: BookInput!, userId: ID!): Boolean!
+    addReq(book: BookInput!): Boolean!
     signUp(username: String!, email: String!, password: String!): String!
     signIn(usernameOrEmail: String, password: String!): String!
-    deleteReq(userId: ID!, bookId: ID!): Boolean!
+    deleteReq(bookId: ID!): Boolean!
   }
 
   input BookInput {

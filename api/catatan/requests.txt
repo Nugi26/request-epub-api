@@ -20,6 +20,31 @@ query {
     }
   }
 }
+query {
+  getUser(id: 7) {
+    id
+    username
+    email
+    avatar
+    requests {
+      id
+      gbook_id
+      title
+      subtitle
+      authors
+      publisher
+      published_date
+      description
+      page_count
+      maturity_rating
+      small_thumbnail
+      thumbnail
+      average_rating
+      ratings_count
+      requests_count  
+    }
+  }
+}
 
 // get all book requests
 query {

@@ -1,3 +1,4 @@
+
 /* add new foreign key column */
 ALTER TABLE users
 ADD book_id INTEGER REFERENCES books(id);
@@ -37,7 +38,27 @@ add column requests_count integer;
 
 /* insert user_request */
 insert into user_request (user_id, book_id)
-values (66,10);
+values (61,11);
+
+insert into user_request (user_id, book_id)
+values (61,1);
+insert into user_request (user_id, book_id)
+values (61,18);
+insert into user_request (user_id, book_id)
+values (62,1);
+insert into user_request (user_id, book_id)
+values (62,2);
+
+insert into user_request (user_id, book_id)
+values (62,12);
+insert into user_request (user_id, book_id)
+values (63,2);
+insert into user_request (user_id, book_id)
+values (63,6);
+
+
+
+
 
 ALTER TABLE books
 ADD requests_count INTEGER; 
@@ -53,3 +74,6 @@ set requests_count = (
   select totalreqs from book_totalreqs
   where books.id in (book_totalreqs.book_id)
 );
+
+select user_id, book_id from user_request
+where user_id = 61 and book_id = 1;
