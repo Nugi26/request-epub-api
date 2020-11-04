@@ -9,9 +9,9 @@ exports.seed = async knex => {
   let users = [];
   for (var i = 0; i < 10; i++) {
     let user = {
-      username: faker.internet.userName(),
+      username: faker.internet.userName().trim().toLowerCase(),
       password: await bcrypt.hash('password', 10),
-      email: faker.internet.email(),
+      email: faker.internet.email().trim().toLowerCase(),
     };
     user.avatar = gravatar(user.email);
     users.push(user);

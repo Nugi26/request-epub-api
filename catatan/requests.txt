@@ -20,6 +20,8 @@ query {
     }
   }
 }
+
+// get user data
 query {
   getUser(id: 7) {
     id
@@ -74,18 +76,12 @@ query {
     username
     email
     avatar
-    requests {
-      id
-      gbook_id
-      title
-      subtitle
-    }
   }
 }
 
 // get a book info
 query {
-  getBook(id: 15) {
+  getBook(id: 4) {
     id
     gbook_id
     title
@@ -104,31 +100,38 @@ query {
   }
 }
 
-mutation addReq($book: BookInput!, $userId: ID!) {
-  addReq (book: $book, userId: $userId)
+// add request
+mutation addReq($book: BookInput!) {
+  addReq (book: $book)
 }
 
+// sign up
 mutation {
   signUp(username: "nugie", email: "nugie@nugie.com", password: "password")
 }
 
+//sign in
 mutation {
-  signIn(usernameOrEmail: "nugie", password: "password")
+  signIn(usernameOrEmail: "kevon_volkman", password: "password")
 }
 
+// remove a request
 mutation {
-  deleteReq(userId: 8, bookId: 19)
+  deleteReq(bookId: 7)
 }
 
-// variables from client
+
+// book variable example from client
 {
   "book" : {
-    "title" : "buku baru",
-    "authors" : ["agus", "bagus"]
-  },
-  "userId" : "8"
+    "gbook_id": "sladfjladf",
+    "title" : "custom book2",
+    "subtitle": "Ini gak punya gbook id",
+    "authors" : ["Nugie"]
+  }
 }
 
+// header example
 {
-  "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6WzZdLCJpYXQiOjE2MDM5NzI4MTh9.DHgr6KK5vB29HsifJBRJDeVe-ub5yUWeaFRV5q2HVFk"
+  "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OSwiaWF0IjoxNjA0NDk4NTY2fQ.kHdoU5y7IG68DMB33RtIA1RA65EWC0UQ3ejrYWqTYRw"
 }

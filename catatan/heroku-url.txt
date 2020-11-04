@@ -7,3 +7,6 @@ Postgresql url:
 postgres://krocdlamairipc:9320fe720c77748eb41a9f57922e92e0975d77d966b4a3f3d7da26c6a7249647@ec2-54-196-89-124.compute-1.amazonaws.com:5432/dbued79m809t3t
 // run knex on heroku
 heroku run knex migrate:latest
+
+// push local db to heroku 
+heroku pg:push postgresql://nugie:nuganteng@localhost:5432/request-epub -a request-epub-api DATABASE_URL

@@ -11,19 +11,17 @@ const searchBooks = require('../gbookapi');
 module.exports = {
   addReq: async (_, { book }, { db, user }) => {
     if (!user) throw new AuthenticationError('Anda belum Sign in!');
-    // get dummy book data from gbookApi
-    // TODO: delete on production!
-    const { items } = await searchBooks('graphql', 1);
-    const dummyBook = items[0];
-
     try {
       // check if book already exists in books table
-      // TODO: change dummyBooks to books on production!
-      const bookExists = await db('books')
-        .select('id')
-        // TODO: change dummyBook to book on production
-        .where('gbook_id', dummyBook.gbook_id)
-        .first();
+      let bookExists;
+      // TODO
+      if (!!book.gbook_id) {
+        bookExists = await db('books')
+          .select('id')
+          // TODO:
+          .where('gbook_id', book.gbook_id)
+          .first();
+      }
 
       // make a transaction mutation for add book record to books table and add user request record to user_request table
       await db.transaction(async trx => {
@@ -31,14 +29,14 @@ module.exports = {
         // if book not exist, add book to books table
         if (!bookExists) {
           addedBookId = await trx('books')
-            // TODO: Don't forget to change dummyBook to book !
-            .insert(dummyBook)
+            .insert(book)
             .returning('id')
             .then(res => res[0]);
         }
 
         // add  user_request record
         const userReqRecord = await trx('user_request').insert({
+          // TODO: change!
           user_id: user.id,
           book_id: addedBookId || bookExists.id,
         });
@@ -51,7 +49,8 @@ module.exports = {
   },
 
   signUp: async (parent, { username, email, password }, { db }) => {
-    // normalize email address
+    // normalize username and email address
+    username = email.trim().toLowerCase();
     email = email.trim().toLowerCase();
     // hash the password
     const hashed = await bcrypt.hash(password, 10);
@@ -77,7 +76,7 @@ module.exports = {
 
   signIn: async (_, { usernameOrEmail, password }, { db }) => {
     if (usernameOrEmail) {
-      // normalize email address
+      // normalize username or email
       usernameOrEmail = usernameOrEmail.trim().toLowerCase();
     }
     // get user's record
