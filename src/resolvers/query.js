@@ -48,4 +48,7 @@ module.exports = {
       return err;
     }
   },
+  hello: async () => {
+    return 'hello world';
+  },
 };
