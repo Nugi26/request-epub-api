@@ -27,6 +27,9 @@ const getUser = token => {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  // TODO: delete this when frontend done!
+  introspection: true,
+  playground: true,
   validationRules: [
     depthLimit(5),
     createComplexityLimitRule(1000, {
