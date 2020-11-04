@@ -1,4 +1,4 @@
 heroku url
-https://request-epub.herokuapp.com/
+https://request-epub-api.herokuapp.com/
 git heroku remote url:
-https://git.heroku.com/request-epub.git 
+https://git.heroku.com/request-epub-api.git 
