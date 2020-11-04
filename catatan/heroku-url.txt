@@ -1,4 +1,6 @@
-heroku url
+heroku api url
 https://request-epub-api.herokuapp.com/
 git heroku remote url:
 https://git.heroku.com/request-epub-api.git 
+Postgresql url:
+ postgresql-globular-46122 as DATABASE_URL 
