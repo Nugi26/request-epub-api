@@ -39,7 +39,7 @@ module.exports = gql`
   }
 
   type Book {
-    #id primary
+    #id from books table
     id: ID
     #gbookId for id from search results
     gbook_id: ID

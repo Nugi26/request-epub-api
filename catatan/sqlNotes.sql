@@ -77,3 +77,7 @@ set requests_count = (
 
 select user_id, book_id from user_request
 where user_id = 61 and book_id = 1;
+
+select *, user_request.user_id from books
+join user_request on id = user_request.book_id
+where user_request.user_id = 1;

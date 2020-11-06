@@ -7,10 +7,12 @@ module.exports = {
   },
 
   searchBook: async (_, { keywords }) => {
+    console.log('searchBooks triggered');
     try {
       return await searchBooks(keywords);
     } catch (err) {
-      return new ForbiddenError(err.message);
+      console.log(err);
+      return err;
     }
   },
 
@@ -49,6 +51,7 @@ module.exports = {
     }
   },
   hello: async () => {
+    console.log('hello');
     return 'hello world';
   },
 };
