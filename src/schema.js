@@ -56,9 +56,9 @@ module.exports = gql`
     average_rating: String
     ratings_count: Int
     #check if this book is requested by logged in user
-    requestedByMe: Boolean
+    req_by_me: Boolean
     # count total requests for this book
-    requests_count: Int
+    reqs_count: Int
     # check if result from gbookApi is already recorded in books table and return id if true
     requestedId: ID
   }

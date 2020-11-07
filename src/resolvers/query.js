@@ -16,9 +16,21 @@ module.exports = {
     }
   },
 
-  getAllReqs: async (_, args, { db }) => {
+  getAllReqs: async (_, args, { db, user }) => {
+    const userId = user === undefined ? 0 : user.id;
     try {
-      return await db('books');
+      const test = await db('books')
+        .select(
+          db.raw(
+            'books.*, count(id) as reqs_count, bool_or(user_request.user_id = ?) as req_by_me',
+            [userId]
+          )
+        )
+        .join('user_request', 'books.id', '=', 'user_request.book_id')
+        .groupBy('books.id')
+        .orderBy('reqs_count', 'desc');
+      console.log(test);
+      return test;
     } catch (err) {
       console.log(err);
       return err;
