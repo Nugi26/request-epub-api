@@ -50,7 +50,7 @@ query {
 
 // get all book requests
 query {
-  requestsFeed {
+  requestsFeed(pageNumber: 2) {
     totalReqs
     requests {
           id
@@ -69,7 +69,6 @@ query {
     ratings_count
     reqs_count  
     req_by_me
-
     }
   }
 }

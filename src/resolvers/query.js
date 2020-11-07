@@ -16,8 +16,15 @@ module.exports = {
     }
   },
 
-  requestsFeed: async (_, args, { db, user }) => {
+  requestsFeed: async (
+    _,
+    { pageNumber = 1, orderBy = 'reqs_count' },
+    { db, user }
+  ) => {
     const userId = user === undefined ? 0 : user.id;
+    const limitValue = 3;
+    // count offset based on page number
+    const offsetValue = (pageNumber - 1) * limitValue;
     try {
       const requests = await db('books')
         .select(
@@ -28,6 +35,8 @@ module.exports = {
         )
         .join('user_request', 'books.id', '=', 'user_request.book_id')
         .groupBy('books.id')
+        .offset(offsetValue)
+        .limit(limitValue)
         .orderBy('reqs_count', 'desc');
       const totalReqs = await db('books')
         .count('id')
