@@ -58,9 +58,22 @@ module.exports = {
       return err;
     }
   },
-  getBook: async (_, { id }, { db }) => {
+  getBook: async (_, { id }, { db, user }) => {
+    const userId = user === undefined ? 0 : user.id;
     try {
-      return await db('books').where('books.id', id).first();
+      const book = await db('books')
+        .select(
+          db.raw(
+            'books.*, count(books.id) as reqs_count, bool_or(user_request.user_id = ?) as req_by_me',
+            [userId]
+          )
+        )
+        .join('user_request', 'books.id', '=', 'user_request.book_id')
+        .where('books.id', id)
+        .groupBy('books.id')
+        .first();
+      console.log(book);
+      return book;
     } catch (err) {
       return err;
     }

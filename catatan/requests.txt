@@ -100,7 +100,8 @@ query {
     thumbnail
     average_rating
     ratings_count
-    requests_count
+    req_by_me
+    reqs_count
   }
 }
 

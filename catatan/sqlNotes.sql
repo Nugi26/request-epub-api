@@ -1,3 +1,15 @@
+// get a book 
+select books.id, count(books.id) as reqs_count, bool_or(user_request.user_id = 2) as req_by_me from books
+join user_request on user_request.book_id = books.id
+where books.id = 2
+group by books.id;
+console.log(book)
+return book
+// get requestsFeed
+select books.*, count(id) as reqs_count, bool_or(user_request.user_id = 10) as req_by_one from books          
+join user_request on user_request.book_id = books.id                                                                    
+group by books.id                                                                                                       
+order by books.id;
 
 /* add new foreign key column */
 ALTER TABLE users
