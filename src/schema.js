@@ -4,7 +4,7 @@ module.exports = gql`
     hello: String
     users: [User]
     searchBook(keywords: String!): SearchResult
-    getAllReqs: [Book]
+    requestsFeed: RequestsFeed
     getUser(id: ID!): User
     me: User!
     getBook(id: ID!): Book
@@ -31,6 +31,11 @@ module.exports = gql`
     thumbnail: String
     average_rating: String
     ratings_count: Int
+  }
+
+  type RequestsFeed {
+    totalReqs: Int!
+    requests: [Book]
   }
 
   type SearchResult {

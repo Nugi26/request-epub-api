@@ -16,10 +16,10 @@ module.exports = {
     }
   },
 
-  getAllReqs: async (_, args, { db, user }) => {
+  requestsFeed: async (_, args, { db, user }) => {
     const userId = user === undefined ? 0 : user.id;
     try {
-      const test = await db('books')
+      const requests = await db('books')
         .select(
           db.raw(
             'books.*, count(id) as reqs_count, bool_or(user_request.user_id = ?) as req_by_me',
@@ -29,8 +29,10 @@ module.exports = {
         .join('user_request', 'books.id', '=', 'user_request.book_id')
         .groupBy('books.id')
         .orderBy('reqs_count', 'desc');
-      console.log(test);
-      return test;
+      const totalReqs = await db('books')
+        .count('id')
+        .then(res => parseInt(res[0].count));
+      return { totalReqs, requests };
     } catch (err) {
       console.log(err);
       return err;

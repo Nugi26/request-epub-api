@@ -50,8 +50,10 @@ query {
 
 // get all book requests
 query {
-  getAllReqs {
-    id
+  requestsFeed {
+    totalReqs
+    requests {
+          id
     gbook_id
     title
     subtitle
@@ -65,7 +67,10 @@ query {
     thumbnail
     average_rating
     ratings_count
-    requests_count  
+    reqs_count  
+    req_by_me
+
+    }
   }
 }
 
