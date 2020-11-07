@@ -4,7 +4,11 @@ module.exports = gql`
     hello: String
     users: [User]
     searchBook(keywords: String!): SearchResult
-    requestsFeed(pageNumber: Int, orderBy: String): RequestsFeed
+    requestsFeed(
+      pageNumber: Int
+      orderBy: String
+      orderDirection: String
+    ): RequestsFeed
     getUser(id: ID!): User
     me: User!
     getBook(id: ID!): Book
