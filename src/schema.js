@@ -68,7 +68,7 @@ module.exports = gql`
     req_by_me: Boolean
     # count total requests for this book
     reqs_count: Int
-    # check if result from gbookApi is already recorded in books table and return id if true
+    # check if result from gbookApi is already recorded in books table and return id if true. Only use this in searchBook() query
     requestedId: ID
   }
 

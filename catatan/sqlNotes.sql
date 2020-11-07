@@ -1,3 +1,11 @@
+// get user's requests list
+select books.id, count(user_request.user_id) as reqs_count, bool_or(user_request.user_id = 2) as req_by_me from books
+join user_request on user_request.book_id = books.id
+where books.id in (
+  select book_id from user_request
+  where user_id = 1
+)
+group by books.id;
 // get a book 
 select books.id, count(books.id) as reqs_count, bool_or(user_request.user_id = 2) as req_by_me from books
 join user_request on user_request.book_id = books.id

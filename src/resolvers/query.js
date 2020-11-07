@@ -61,7 +61,7 @@ module.exports = {
   getBook: async (_, { id }, { db, user }) => {
     const userId = user === undefined ? 0 : user.id;
     try {
-      const book = await db('books')
+      return await db('books')
         .select(
           db.raw(
             'books.*, count(books.id) as reqs_count, bool_or(user_request.user_id = ?) as req_by_me',
@@ -72,14 +72,13 @@ module.exports = {
         .where('books.id', id)
         .groupBy('books.id')
         .first();
-      console.log(book);
-      return book;
     } catch (err) {
       return err;
     }
   },
 
   me: async (_, args, { db, user }) => {
+    if (!user) return new ForbiddenError('Anda tidak sedang log in');
     try {
       return await db('users').where('id', user.id).first();
     } catch (err) {
