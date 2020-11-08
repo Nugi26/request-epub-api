@@ -85,6 +85,26 @@ module.exports = {
       return err;
     }
   },
+
+  getSomeBooks: async (_, { books }, { db, user }) => {
+    const userId = user === undefined ? 0 : user.id;
+    try {
+      const test = await db('books')
+        .select(
+          db.raw(
+            'books.*, count(books.id) as reqs_count, bool_or(user_request.user_id = ?) as req_by_me',
+            [userId]
+          )
+        )
+        .join('user_request', 'books.id', '=', 'user_request.book_id')
+        .whereIn('books.id', books)
+        .groupBy('books.id');
+      console.log(test);
+      return test;
+    } catch (err) {
+      return err;
+    }
+  },
   hello: async () => {
     console.log('hello');
     return 'hello world';

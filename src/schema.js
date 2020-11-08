@@ -12,6 +12,7 @@ module.exports = gql`
     getUser(id: ID!): User
     me: User!
     getBook(id: ID!): Book
+    getSomeBooks(books: [ID]!): [Book]
   }
 
   type Mutation {
