@@ -1,8 +1,9 @@
 // search books using google book api
 query {
-  searchBook(keywords: "graphql") {
+  searchBook(keywords: "andrea hirata") {
     totalItems
     items {
+      id
       gbook_id
       title
       subtitle
@@ -16,7 +17,8 @@ query {
       thumbnail
       average_rating
       ratings_count
-      requestedId
+      reqs_count
+      req_by_me
     }
   }
 }

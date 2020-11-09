@@ -6,10 +6,38 @@ module.exports = {
     return db('users').select('id', 'username', 'email', 'avatar');
   },
 
-  searchBook: async (_, { keywords }) => {
-    console.log('searchBooks triggered');
+  searchBook: async (_, { keywords }, { db, user }) => {
+    const userId = user === undefined ? 0 : user.id;
     try {
-      return await searchBooks(keywords);
+      const searchResults = await searchBooks(keywords);
+      // make array of gbook_id
+      let { items } = searchResults;
+      const gbookIds = items.map(item => {
+        return item.gbook_id;
+      });
+      // check on db if results already requested
+      const requested = await db('books')
+        .select(
+          db.raw(
+            'books.*, count(books.id) as reqs_count, bool_or(user_request.user_id = ?) as req_by_me',
+            [userId]
+          )
+        )
+        .join('user_request', 'books.id', '=', 'user_request.book_id')
+        .whereIn('gbook_id', gbookIds)
+        .groupBy('books.id');
+      // pop any searchResults items that have already requested
+      if (requested.length) {
+        items.forEach((item, i) => {
+          for (const request of requested) {
+            if (item.gbook_id === request.gbook_id) items.splice(i, 1);
+          }
+        });
+        // add requested to search result items
+        items = [...requested, ...items];
+      }
+      searchResults.items = items;
+      return searchResults;
     } catch (err) {
       console.log(err);
       return err;
