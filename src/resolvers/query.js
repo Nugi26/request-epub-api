@@ -36,6 +36,10 @@ module.exports = {
         // add requested to search result items
         items = [...requested, ...items];
       }
+      // add id for unrequested items to avoid apolloClient error
+      items.forEach(item => {
+        if (!item.id) item.id = item.gbook_id;
+      });
       searchResults.items = items;
       return searchResults;
     } catch (err) {
