@@ -50,7 +50,7 @@ module.exports = {
 
   signUp: async (parent, { username, email, password }, { db }) => {
     // normalize username and email address
-    username = email.trim().toLowerCase();
+    username = username.trim().toLowerCase();
     email = email.trim().toLowerCase();
     // hash the password
     const hashed = await bcrypt.hash(password, 10);
