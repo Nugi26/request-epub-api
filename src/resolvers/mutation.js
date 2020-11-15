@@ -75,6 +75,10 @@ module.exports = {
   },
 
   signIn: async (_, { usernameOrEmail, password }, { db }) => {
+    if (!usernameOrEmail || !password)
+      return new AuthenticationError(
+        'username/email dan password harus diisi!'
+      );
     if (usernameOrEmail) {
       // normalize username or email
       usernameOrEmail = usernameOrEmail.trim().toLowerCase();

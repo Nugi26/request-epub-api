@@ -18,7 +18,7 @@ module.exports = gql`
   type Mutation {
     addReq(book: BookInput!): Boolean!
     signUp(username: String!, email: String!, password: String!): String!
-    signIn(usernameOrEmail: String, password: String!): String!
+    signIn(usernameOrEmail: String!, password: String!): String!
     deleteReq(bookId: ID!): Boolean!
   }
 
