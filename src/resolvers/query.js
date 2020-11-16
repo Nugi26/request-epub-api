@@ -50,7 +50,7 @@ module.exports = {
 
   requestsFeed: async (
     _,
-    { pageNumber = 1, orderBy = 'reqs_count', orderDirection = 'desc' },
+    { pageNumber, orderBy, orderDirection },
     { db, user }
   ) => {
     const userId = user === undefined ? 0 : user.id;
