@@ -11,6 +11,7 @@ const searchBooks = require('../gbookapi');
 module.exports = {
   addReq: async (_, { book }, { db, user }) => {
     if (!user) throw new AuthenticationError('Anda belum Sign in!');
+    let output;
     try {
       // check if book already exists in books table
       let bookExists;
@@ -35,14 +36,22 @@ module.exports = {
         }
 
         // add  user_request record
-        const userReqRecord = await trx('user_request').insert({
-          // TODO: change!
-          user_id: user.id,
-          book_id: addedBookId || bookExists.id,
-        });
+        const userReqRecord = await trx('user_request')
+          .insert(
+            {
+              user_id: user.id,
+              book_id: addedBookId || bookExists.id,
+            },
+            ['book_id']
+          )
+          .then(res => {
+            output = res[0].book_id;
+            return;
+          });
       });
+      console.log(output);
 
-      return true;
+      return output;
     } catch (err) {
       return new ForbiddenError(err);
     }
@@ -126,7 +135,7 @@ module.exports = {
           await trx('books').where('id', bookId).del();
         }
       });
-      return true;
+      return bookId;
     } catch (err) {
       return err;
     }
