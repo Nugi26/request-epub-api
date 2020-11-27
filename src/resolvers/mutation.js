@@ -49,7 +49,6 @@ module.exports = {
             return;
           });
       });
-      console.log(output);
 
       return output;
     } catch (err) {
@@ -98,7 +97,6 @@ module.exports = {
       .where('username', usernameOrEmail)
       .orWhere('email', usernameOrEmail)
       .first();
-    console.log(user);
     // if no user is found, throw an authentication error
     if (!user) {
       throw new AuthenticationError('username atau email Anda tidak terdaftar');
@@ -109,7 +107,6 @@ module.exports = {
       throw new AuthenticationError('Password Anda salah');
     }
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
-    console.log(token);
     return token;
   },
 
