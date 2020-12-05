@@ -17,7 +17,7 @@ const searchBooks = async (keywords, maxResults) => {
     return reorganizeResults(json);
   } catch (err) {
     console.log(err);
-    returnerr;
+    return err;
   }
 };
 
