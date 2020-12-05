@@ -6,14 +6,10 @@ module.exports = {
     return db('users').select('id', 'username', 'email', 'avatar');
   },
 
-  searchBook: async (
-    _,
-    { keywords, startIndex = 0, maxResults },
-    { db, user }
-  ) => {
+  searchBook: async (_, { keywords, startIndex = 0 }, { db, user }) => {
     const userId = user === undefined ? 0 : user.id;
     try {
-      const searchResults = await searchBooks(keywords, startIndex, maxResults);
+      const searchResults = await searchBooks(keywords, startIndex);
       // make array of gbook_id
       let { items } = searchResults;
       const gbookIds = items.map(item => {
