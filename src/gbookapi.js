@@ -1,9 +1,9 @@
-const fetch = require("node-fetch");
-const searchUrl = (keywords, maxResults = 10) => {
-  const url = new URL("https://www.googleapis.com/books/v1/volumes");
+const fetch = require('node-fetch');
+const searchUrl = (keywords, startIndex = 0, maxResults = 10) => {
+  const url = new URL('https://www.googleapis.com/books/v1/volumes');
   const params = {
     q: keywords,
-    startIndex: 0,
+    startIndex,
     maxResults,
   };
   url.search = new URLSearchParams(params).toString();
@@ -21,10 +21,10 @@ const searchBooks = async (keywords, maxResults) => {
   }
 };
 
-const reorganizeResults = (json) => {
+const reorganizeResults = json => {
   let { totalItems, items } = json;
   // restructuring items properties
-  items = items.map((item) => {
+  items = items.map(item => {
     const { id, volumeInfo } = { ...item };
     const {
       title,

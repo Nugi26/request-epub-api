@@ -3,7 +3,11 @@ module.exports = gql`
   type Query {
     hello: String
     users: [User]
-    searchBook(keywords: String!): SearchResult
+    searchBook(
+      keywords: String!
+      startIndex: Int
+      maxResults: Int
+    ): SearchResult
     requestsFeed(
       pageNumber: Int
       orderBy: String
