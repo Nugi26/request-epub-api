@@ -114,6 +114,7 @@ module.exports = {
 
   me: async (_, args, { db, user }) => {
     if (!user) return new ForbiddenError('Anda tidak sedang log in');
+    // console.log(user.id, typeof user.id);
     try {
       return await db('users').where('id', user.id).first();
     } catch (err) {

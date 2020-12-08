@@ -71,7 +71,7 @@ module.exports = {
         .insert({ username, email, password: hashed, avatar })
         .returning('id')
         .then(id => {
-          return jwt.sign({ id }, process.env.JWT_SECRET);
+          return jwt.sign({ id: id[0] }, process.env.JWT_SECRET);
         });
       return user;
     } catch (err) {

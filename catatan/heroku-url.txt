@@ -1,5 +1,5 @@
 heroku api url
-https://request-epub-api.herokuapp.com/
+https://request-epub-api.herokuapp.com/api
 git heroku remote url:
 https://git.heroku.com/request-epub-api.git 
 Postgresql url:
