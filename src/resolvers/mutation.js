@@ -57,6 +57,8 @@ module.exports = {
   },
 
   signUp: async (parent, { username, email, password }, { db }) => {
+    if (!username || !email || !password)
+      return new AuthenticationError('harap isi semua kolom');
     // normalize username and email address
     username = username.trim().toLowerCase();
     email = email.trim().toLowerCase();
